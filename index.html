@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8edea, #dcffef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .calculator {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            transition: transform 0.3s ease-in-out;
+            transform-origin: center;
+        }
+
+        .calculator:hover {
+            transform: scale(1.03);
+        }
+
+        .display {
+            background-color: #f0f8ff; /* Light display background */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            padding: 10px;
+            text-align: right;
+            font-size: 2em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            transition: background-color 0.2s ease;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+
+        button {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #e0f2f1;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            background-color: #b2dfdb;
+        }
+
+        .operator {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+
+        .operator:hover {
+            background-color: #b2dfdb;
+        }
+
+        .clear {
+            background-color: #ffcdd2;
+            color: #d32f2f;
+        }
+
+        .clear:hover {
+            background-color: #f48fb1;
+        }
+
+        .equal {
+            grid-column: span 2;
+            background-color: #4db6ac;
+            color: white;
+        }
+
+        .equal:hover {
+            background-color: #26a69a;
+        }
+
+        /* Added some visual polish */
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.7); }
+            50% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+            100% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.7); }
+        }
+
+        .equal:focus {
+            animation: glow 1s infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">Clear</button>
+            <button onclick="deleteLast()">Delete</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let displayValue = '0';
+
+        function updateDisplay() {
+            document.getElementById('display').innerText = displayValue;
+        }
+
+        function appendToDisplay(value) {
+            if (displayValue === '0' && value !== '.') {
+                displayValue = value;
+            } else {
+                displayValue += value;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            displayValue = displayValue.slice(0, -1);
+            if (displayValue === '') {
+                displayValue = '0';
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                // eslint-disable-next-line no-eval
+                displayValue = eval(displayValue);
+                if (isNaN(displayValue) || !isFinite(displayValue)) {
+                    displayValue = 'Error';
+                }
+            } catch (error) {
+                displayValue = 'Error';
+            }
+            updateDisplay();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if (/^[0-9\+\-\*\/.\=]$/.test(key)) {
+                if (key === '=') {
+                    calculate();
+                } else {
+                    appendToDisplay(key);
+                }
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+
+        updateDisplay(); // Initial display update
+    </script>
+
+</body>
+</html>
